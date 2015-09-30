@@ -7,7 +7,8 @@ var THREE = require('three');
 function initApp() {
   var renderer = new THREE.WebGLRenderer();
   renderer.setSize(800, 600);
-  document.body.appendChild(renderer.domElement);
+  var canvasElement = document.getElementById('canvas-3d');
+  canvasElement.appendChild(renderer.domElement);
 
   var scene = new THREE.Scene();
 
