@@ -12,7 +12,7 @@
     <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
     <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
     <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
@@ -24,62 +24,111 @@
     <link rel="stylesheet" href="main.css">
     <script type="text/javascript" src="bundle.js" charset="utf-8"></script>
 </head>
-<body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-1"><img style="padding: 8px;" height="48" src="images/terrain_icon.png" alt="terrain image"></div>
-            <div class="col-md-11"><h3>Terrain Designer</h3></div>
+<body ng-app="TerrainGeneratorApp">
+<script type="x-shader/x-vertex" id="vertexShader">
+
+			attribute vec3 center;
+			varying vec3 vCenter;
+
+			void main() {
+
+				vCenter = center;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+			}
+
+
+</script>
+
+<script type="x-shader/x-fragment" id="fragmentShader">
+
+			varying vec3 vCenter;
+
+			float edgeFactorTri() {
+
+				vec3 d = fwidth( vCenter.xyz );
+				vec3 a3 = smoothstep( vec3( 0.0 ), d * 1.5, vCenter.xyz );
+				return min( min( a3.x, a3.y ), a3.z );
+
+			}
+
+			void main() {
+
+				gl_FragColor.rgb = mix( vec3( 1.0 ), vec3( 0.2 ), edgeFactorTri() );
+				gl_FragColor.a = 1.0;
+			}
+
+
+</script>
+<div class="container-fluid" ng-controller="TerrainAppController">
+    <div class="row">
+        <div class="col-md-1"><img style="padding: 8px;" height="48" src="images/terrain_icon.png" alt="terrain image">
         </div>
-        <div class="row">
-            <div class="col-md-8">
-                <form class="form-horizontal parameter-form">
-                    <fieldset>
+        <div class="col-md-11"><h3>Terrain Designer</h3></div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <form class="form-horizontal parameter-form">
+                <fieldset>
 
-                        <!-- Form Name -->
-                        <legend>Parameters</legend>
+                    <!-- Form Name -->
+                    <legend>Parameters</legend>
 
-                        <!-- Text input-->
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="grid-width-pixels-text">Grid Width</label>
-                            <div class="col-md-4">
-                                <input id="grid-width-pixels-text" name="grid-width-pixels-text" type="text" placeholder="grid width in pixels" value="1000" class="form-control input-md" required="">
-                                <span class="help-block">pixels</span>
-                            </div>
+                    <!-- Text input-->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="grid-width-pixels-text">Grid Width</label>
+
+                        <div class="col-md-4">
+                            <input id="grid-width-pixels-text" name="grid-width-pixels-text" type="text"
+                                   placeholder="grid width in pixels" ng-model="gridWidthPixels"
+                                   class="form-control input-md" required="">
+                            <span class="help-block">pixels</span>
                         </div>
+                    </div>
 
-                        <!-- Text input-->
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="grid-height-pixels-text">Grid Height</label>
-                            <div class="col-md-4">
-                                <input id="grid-height-pixels-text" name="grid-height-pixels-text" type="text" placeholder="grid height in pixels" value="1000" class="form-control input-md" required="">
-                                <span class="help-block">pixels</span>
-                            </div>
+                    <!-- Text input-->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="grid-height-pixels-text">Grid Height</label>
+
+                        <div class="col-md-4">
+                            <input id="grid-height-pixels-text" name="grid-height-pixels-text" type="text"
+                                   placeholder="grid height in pixels" ng-model="gridHeightPixels"
+                                   class="form-control input-md" required="">
+                            <span class="help-block">pixels</span>
                         </div>
+                    </div>
 
-                        <!-- Text input-->
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="mesh-grid-size-pixels-text">Mesh Grid Element Size</label>
-                            <div class="col-md-4">
-                                <input id="mesh-grid-size-pixels-text" name="mesh-grid-size-pixels-text" type="text" placeholder="grid element size in pixels" value="50" class="form-control input-md" required="">
-                                <span class="help-block">pixels</span>
-                            </div>
+                    <!-- Text input-->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="mesh-grid-size-pixels-text">Mesh Grid Point
+                            Count</label>
+
+                        <div class="col-md-4">
+                            <input id="mesh-grid-size-pixels-text" name="mesh-grid-size-pixels-text" type="text"
+                                   placeholder="grid point count" ng-model="gridPointCount"
+                                   class="form-control input-md" required="">
+                            <span class="help-block">number of grid steps (increasing makes the terrain more detailed)</span>
                         </div>
+                    </div>
 
-                        <!-- Button -->
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="generate-button"></label>
-                            <div class="col-md-4">
-                                <button id="generate-button" name="generate-button" class="btn btn-primary" onclick="alert('Not working yet! Come back later...');">Generate Mesh</button>
-                            </div>
+                    <!-- Button -->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="generate-button"></label>
+
+                        <div class="col-md-4">
+                            <button id="generate-button" name="generate-button" class="btn btn-primary"
+                                    ng-click="generateButtonClick()">Generate Mesh
+                            </button>
                         </div>
+                    </div>
 
-                    </fieldset>
-                </form>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12" id="canvas-3d"></div>
+                </fieldset>
+            </form>
         </div>
     </div>
+    <div class="row" style="padding-top: 8px;">
+        <div class="col-md-12" id="canvas-3d"></div>
+    </div>
+</div>
 </body>
 </html>
