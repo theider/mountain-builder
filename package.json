@@ -10,13 +10,16 @@
   },
   "keywords": [
     "angularjs",
-    "example",
-    "browsenpm"
+    "three"
   ],
   "dependencies": {
-    "bootstrap": "*",
-    "angularjs": "*"
+    "bootstrap": "latest",
+    "angular": "latest",
+    "angular-bootstrap": "latest",
+    "three": "latest"
   },
   "devDependencies": {
+    "webpack": "latest",
+    "webpack-dev-server": "latest"
   }
 }
