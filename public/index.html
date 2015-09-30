@@ -30,8 +30,50 @@
             <div class="col-md-11"><h3>Terrain Designer</h3></div>
         </div>
         <div class="row">
-            <div class="col-md-4">
-                
+            <div class="col-md-12">
+                <form class="form-horizontal">
+                    <fieldset>
+
+                        <!-- Form Name -->
+                        <legend>Parameters</legend>
+
+                        <!-- Text input-->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="grid-width-pixels-text">Grid Width</label>
+                            <div class="col-md-4">
+                                <input id="grid-width-pixels-text" name="grid-width-pixels-text" type="text" placeholder="grid width in pixels" value="1000" class="form-control input-md" required="">
+                                <span class="help-block">pixels</span>
+                            </div>
+                        </div>
+
+                        <!-- Text input-->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="grid-height-pixels-text">Grid Height</label>
+                            <div class="col-md-4">
+                                <input id="grid-height-pixels-text" name="grid-height-pixels-text" type="text" placeholder="grid height in pixels" value="1000" class="form-control input-md" required="">
+                                <span class="help-block">pixels</span>
+                            </div>
+                        </div>
+
+                        <!-- Text input-->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="mesh-grid-size-pixels-text">Mesh Grid Element Size</label>
+                            <div class="col-md-4">
+                                <input id="mesh-grid-size-pixels-text" name="mesh-grid-size-pixels-text" type="text" placeholder="grid element size in pixels" value="50" class="form-control input-md" required="">
+                                <span class="help-block">pixels</span>
+                            </div>
+                        </div>
+
+                        <!-- Button -->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="generate-button"></label>
+                            <div class="col-md-4">
+                                <button id="generate-button" name="generate-button" class="btn btn-primary">Generate Mesh</button>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </form>
             </div>
         </div>
         <div class="row">
