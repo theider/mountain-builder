@@ -8,29 +8,45 @@ var THREE = require('three');
 var app = angular.module("TerrainGeneratorApp", []);
 
 app.controller("TerrainAppController", function($scope) {
-  $scope.message = "Hey!";
+
+  $scope.animate = function() {
+    $scope.planeObject.rotation.x += 0.01;
+    $scope.planeObject.rotation.z += 0.01;
+    requestAnimationFrame( $scope.animate );
+    $scope.renderer.render(scene, camera);
+  };
+
 
   $scope.generateButtonClick = function() {
-    alert('Not working yet! Come back later...');
+    $scope.generatePlaneObject();
   };
 
   $scope.gridWidthPixels = 1000;
   $scope.gridHeightPixels = 1000;
 
-  $scope.gridPointCount = 20;
+  $scope.gridIndex = 1;
+
+  $scope.gridIndexes = [1,2,3,4,5,6,7,8,9];
+
+  $scope.onGridIndexChanged = function() {
+    console.log($scope.gridIndex);
+  }
 
   $scope.vectorText = function(p) {
     return '(' + p.x + ',' + p.y + ',' + p.z + ')';
   }
 
   $scope.generatePlaneObject = function() {
-    if($scope.planeObject) {
+    if($scope.planeObject !== undefined) {
+      console.log('removed old object');
       $scope.scene.remove($scope.planeObject);
     }
 
     console.log('generating new plane: widthPels=' + $scope.gridWidthPixels + ', heightPels=' + $scope.gridHeightPixels + ' gridPointCount=' + $scope.gridPointCount);
     var geometry = new THREE.Geometry();
-    var gc = 4; // factor = 1 (2^1+1=3)
+    console.log('gridindex = ' + $scope.gridIndex);
+    var gc = Math.pow(2,$scope.gridIndex); // factor = 1 (2^1+1=3)
+    console.log('gc=' + gc);
     var points = new Array();
     var deltaX = $scope.gridWidthPixels / (gc-1);
     var deltaZ = $scope.gridHeightPixels / (gc-1);
@@ -41,8 +57,6 @@ app.controller("TerrainAppController", function($scope) {
         var zp = (-1 * ($scope.gridHeightPixels/2)) + (deltaZ * z);
         var p0 = new THREE.Vector3( xp, 0, zp);
         points[x][z] = p0;
-        //geometry.vertices.push(p0);
-        console.log(x + ':' + z + ' p=' + $scope.vectorText(p0));
       }
     }
     // render faces
@@ -66,18 +80,19 @@ app.controller("TerrainAppController", function($scope) {
 
     geometry.computeBoundingSphere();
 
-    //var geometry = new THREE.BoxGeometry( 100, 100, 100 );
+    //var geometry = new THREE.BoxGeometry( 200, 200, 200 );
 
     //var material = new THREE.MeshLambertMaterial( {color: 0xAAAACC} );
+    //var material = new THREE.MeshLambertMaterial( { color: 0xffaa00 } );
     var material = new THREE.MeshBasicMaterial( { wireframe: true } );
     var planeObject = new THREE.Mesh( geometry, material );
+    $scope.planeObject = planeObject;
     $scope.scene.add( planeObject );
-    $scope.renderer.render(scene, camera);
   };
 
   var CANVAS_WIDTH_PIXELS = 800;
   var CANVAS_HEIGHT_PIXELS = 600;
-  var renderer = new THREE.WebGLRenderer({ antialias: true });
+  var renderer = new THREE.WebGLRenderer();
   $scope.renderer = renderer;
   renderer.setSize(CANVAS_WIDTH_PIXELS, CANVAS_HEIGHT_PIXELS);
   var canvasElement = document.getElementById('canvas-3d');
@@ -97,11 +112,17 @@ app.controller("TerrainAppController", function($scope) {
   console.log('scene center=' + $scope.vectorText(sceneCenter));
   camera.lookAt(sceneCenter);
 
-  //var light = new THREE.AmbientLight(0x999999);
-  //scene.add(light);
+  var light = new THREE.AmbientLight(0x999999);
+  scene.add(light);
 
-  renderer.setClearColor(0x000000, 1);
+  var plight = new THREE.PointLight(0x666666);
+  plight.position.set(100, 500, 100);
+  scene.add(plight);
+
+  //$scope.renderer.setClearColor(0x000000, 1);
   $scope.generatePlaneObject();
+
+  $scope.animate();
 
 });
 

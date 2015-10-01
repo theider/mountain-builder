@@ -65,13 +65,12 @@
 
                     <!-- Text input-->
                     <div class="form-group">
-                        <label class="col-md-4 control-label" for="mesh-grid-size-pixels-text">Mesh Grid Point
+                        <label class="col-md-4 control-label" for="mesh-grid-index">Mesh Grid Point
                             Count</label>
 
                         <div class="col-md-4">
-                            <input id="mesh-grid-size-pixels-text" name="mesh-grid-size-pixels-text" type="text"
-                                   placeholder="grid point count" ng-model="gridPointCount"
-                                   class="form-control input-md" required="">
+                            <select  id="mesh-grid-index" name="mesh-grid-index" ng-options="gridIndex as gridIndex for gridIndex in gridIndexes" ng-model="gridIndex" ng-change="onGridIndexChanged()">
+                            </select>
                             <span class="help-block">number of grid steps (increasing makes the terrain more detailed)</span>
                         </div>
                     </div>
