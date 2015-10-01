@@ -10,8 +10,8 @@ var app = angular.module("TerrainGeneratorApp", []);
 app.controller("TerrainAppController", function($scope) {
 
   $scope.animate = function() {
-    $scope.planeObject.rotation.x += 0.01;
-    $scope.planeObject.rotation.z += 0.01;
+    $scope.planeObject.rotation.y += 0.01;
+    //$scope.planeObject.rotation.z += 0.01;
     requestAnimationFrame( $scope.animate );
     $scope.renderer.render(scene, camera);
   };
