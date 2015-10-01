@@ -9,8 +9,31 @@ var app = angular.module("TerrainGeneratorApp", []);
 
 app.controller("TerrainAppController", function($scope) {
 
+  var startTime = new Date();
+  $scope.lastFrameTimeMs = startTime.getTime();
+
+  $scope.planeSpin = 0;
+
+  $scope.spinMinusButtonClick = function() {
+    $scope.planeSpin = -1;
+  };
+
+  $scope.spinNullButtonClick = function() {
+    $scope.planeSpin = 0;
+  };
+
+  $scope.spinPlusButtonClick = function() {
+    $scope.planeSpin = +1;
+  };
+
   $scope.animate = function() {
-    $scope.planeObject.rotation.y += 0.01;
+    var frameTime = new Date();
+    var frameIntervalMs = frameTime.getTime() - $scope.lastFrameTimeMs;
+    $scope.lastFrameTimeMs = frameTime.getTime();
+    // rotate plane depending on planeSpin
+    // rotation is pi/2 radians per second
+    var angle = (frameIntervalMs * (Math.PI/2)) / 1000;
+    $scope.planeObject.rotation.y += ($scope.planeSpin * angle);
     //$scope.planeObject.rotation.z += 0.01;
     requestAnimationFrame( $scope.animate );
     $scope.renderer.render(scene, camera);
@@ -24,9 +47,9 @@ app.controller("TerrainAppController", function($scope) {
   $scope.gridWidthPixels = 1000;
   $scope.gridHeightPixels = 1000;
 
-  $scope.gridIndex = 1;
+  $scope.gridIndex = 2;
 
-  $scope.gridIndexes = [1,2,3,4,5,6,7,8,9];
+  $scope.gridIndexes = [2,3,4,5,6,7,8,9];
 
   $scope.onGridIndexChanged = function() {
     console.log($scope.gridIndex);

@@ -32,7 +32,7 @@
         <div class="col-md-11"><h3>Terrain Designer</h3></div>
     </div>
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-6">
             <form class="form-horizontal parameter-form">
                 <fieldset>
 
@@ -63,15 +63,12 @@
                         </div>
                     </div>
 
-                    <!-- Text input-->
                     <div class="form-group">
-                        <label class="col-md-4 control-label" for="mesh-grid-index">Mesh Grid Point
-                            Count</label>
-
+                        <label class="col-md-4 control-label" for="mesh-grid-index">Mesh Grid Scale</label>
                         <div class="col-md-4">
-                            <select  id="mesh-grid-index" name="mesh-grid-index" ng-options="gridIndex as gridIndex for gridIndex in gridIndexes" ng-model="gridIndex" ng-change="onGridIndexChanged()">
+                            <select  id="mesh-grid-index" class="form-control" name="mesh-grid-index" ng-options="gridIndex as gridIndex for gridIndex in gridIndexes" ng-model="gridIndex" ng-change="onGridIndexChanged()">
                             </select>
-                            <span class="help-block">number of grid steps (increasing makes the terrain more detailed)</span>
+                            <span class="help-block">grid detail (increasing makes the terrain more detailed)</span>
                         </div>
                     </div>
 
@@ -89,8 +86,49 @@
                 </fieldset>
             </form>
         </div>
+        <div class="col-md-6">
+            <form class="form-horizontal parameter-form">
+                <fieldset>
+
+                    <!-- Form Name -->
+                    <legend>Control</legend>
+
+                    <!-- Select Basic -->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="shader-selector">Shader</label>
+                        <div class="col-md-4">
+                            <select id="shader-selector" name="shader-selector" class="form-control">
+                                <option value="1">Wireframe</option>
+                                <option value="2">Solid</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Button -->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="spin-minus-button">Spin</label>
+                        <div class="col-md-4">
+                            <button id="spin-minus-button" name="spin-minus-button" class="btn btn-primary" ng-click="spinMinusButtonClick()">-</button>
+                            <button id="spin-null-button" name="spin-null-button" class="btn btn-primary" ng-click="spinNullButtonClick()">0</button>
+                            <button id="spin-plus-button" name="spin-plus-button" class="btn btn-primary" ng-click="spinPlusButtonClick()">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Button -->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="elevation-minus-button">Elevation</label>
+                        <div class="col-md-4">
+                            <button id="elevation-minus-button" name="elevation-minus-button" class="btn btn-primary">-</button>
+                            <button id="elevation-null-button" name="elevation-null-button" class="btn btn-primary">0</button>
+                            <button id="elevation-plus-button" name="elevation-plus-button" class="btn btn-primary">+</button>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </form>
+        </div>
     </div>
-    <div class="row" style="padding-top: 8px;">
+    <div class="row" style="padding-top: 8px; padding-bottom: 8px;">
         <div class="col-md-12" id="canvas-3d"></div>
     </div>
 </div>
