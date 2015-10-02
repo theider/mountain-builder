@@ -117,7 +117,7 @@ app.controller("TerrainAppController", function($scope) {
   }
 
   $scope.pointCamera = function() {
-    var R = $scope.gridWidthPixels * 4;
+    var R = $scope.gridWidthPixels * 2;
     var y = R * Math.sin(Math.radians($scope.cameraAngle));
     var z = R * Math.cos(Math.radians($scope.cameraAngle));
     $scope.camera.position.set(0, y, -1 * z);
@@ -179,6 +179,8 @@ app.controller("TerrainAppController", function($scope) {
     var planeObject = new THREE.Mesh( geometry, material );
     $scope.planeObject = planeObject;
     $scope.scene.add( planeObject );
+
+    $scope.pointCamera();
   };
 
   var CANVAS_WIDTH_PIXELS = 800;
