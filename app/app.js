@@ -1,13 +1,32 @@
 /**
  * Created by theider on 9/29/15.
  */
+
 var angular = require('angular');
 var THREE = require('three');
 // app.
 
 var app = angular.module("TerrainGeneratorApp", []);
 
+// Converts from degrees to radians.
+Math.radians = function(degrees) {
+  return degrees * Math.PI / 180;
+};
+
+// Converts from radians to degrees.
+Math.degrees = function(radians) {
+  return radians * 180 / Math.PI;
+};
+
+var ELEV_DESCENDING = -1;
+var ELEV_IDLE = 0;
+var ELEV_ASCENDING = +1;
+
 app.controller("TerrainAppController", function($scope) {
+
+  $scope.cameraAngle = 20;
+  $scope.targetCameraAngle = $scope.cameraAngle;
+  $scope.elevationState = ELEV_IDLE;
 
   var startTime = new Date();
   $scope.lastFrameTimeMs = startTime.getTime();
@@ -26,6 +45,28 @@ app.controller("TerrainAppController", function($scope) {
     $scope.planeSpin = +1;
   };
 
+  $scope.elevationMinusButtonClick = function() {
+    if( ($scope.cameraAngle > 0) && ($scope.elevationState === ELEV_IDLE) ) {
+      $scope.targetCameraAngle -= ($scope.targetCameraAngle % 10);
+      $scope.targetCameraAngle -= 10;
+      console.log('target camera angle ' + $scope.targetCameraAngle);
+      $scope.elevationState = ELEV_DESCENDING;
+    }
+  }
+
+  $scope.elevationNullButtonClick = function() {
+    $scope.elevationState = ELEV_IDLE;
+  }
+
+  $scope.elevationPlusButtonClick = function() {
+    if( ($scope.cameraAngle < 90) && ($scope.elevationState === ELEV_IDLE) ) {
+      $scope.targetCameraAngle -= ($scope.targetCameraAngle % 10);
+      $scope.targetCameraAngle += 10;
+      console.log('target camera angle ' + $scope.targetCameraAngle);
+      $scope.elevationState = ELEV_ASCENDING;
+    }
+  }
+
   $scope.animate = function() {
     var frameTime = new Date();
     var frameIntervalMs = frameTime.getTime() - $scope.lastFrameTimeMs;
@@ -36,7 +77,23 @@ app.controller("TerrainAppController", function($scope) {
     $scope.planeObject.rotation.y += ($scope.planeSpin * angle);
     //$scope.planeObject.rotation.z += 0.01;
     requestAnimationFrame( $scope.animate );
-    $scope.renderer.render(scene, camera);
+    $scope.renderer.render($scope.scene, $scope.camera);
+    if($scope.elevationState === ELEV_DESCENDING) {
+      if(($scope.cameraAngle - angle) >= $scope.targetCameraAngle) {
+        $scope.cameraAngle -= Math.degrees(angle);
+        $scope.pointCamera();
+      } else {
+        $scope.elevationState = ELEV_IDLE;
+      }
+    } else if($scope.elevationState === ELEV_ASCENDING) {
+      if(($scope.cameraAngle - angle) <= $scope.targetCameraAngle) {
+        $scope.cameraAngle += Math.degrees(angle);
+        $scope.pointCamera();
+      } else {
+        $scope.elevationState = ELEV_IDLE;
+        $scope.pointCamera();
+      }
+    }
   };
 
 
@@ -57,6 +114,15 @@ app.controller("TerrainAppController", function($scope) {
 
   $scope.vectorText = function(p) {
     return '(' + p.x + ',' + p.y + ',' + p.z + ')';
+  }
+
+  $scope.pointCamera = function() {
+    var R = $scope.gridWidthPixels * 4;
+    var y = R * Math.sin(Math.radians($scope.cameraAngle));
+    var z = R * Math.cos(Math.radians($scope.cameraAngle));
+    $scope.camera.position.set(0, y, -1 * z);
+    var sceneCenter = $scope.scene.position;
+    $scope.camera.lookAt(sceneCenter);
   }
 
   $scope.generatePlaneObject = function() {
@@ -82,6 +148,8 @@ app.controller("TerrainAppController", function($scope) {
         points[x][z] = p0;
       }
     }
+    // do terrain fractal calc
+
     // render faces
     var i=0;
     for(var x = 0; x < (gc-1); x++) {
@@ -121,26 +189,23 @@ app.controller("TerrainAppController", function($scope) {
   var canvasElement = document.getElementById('canvas-3d');
   canvasElement.appendChild(renderer.domElement);
 
-  var scene = new THREE.Scene();
-  $scope.scene = scene;
+  $scope.scene = new THREE.Scene();
 
-  var camera = new THREE.PerspectiveCamera(
+  $scope.camera = new THREE.PerspectiveCamera(
     35,             // Field of view
     CANVAS_WIDTH_PIXELS / CANVAS_HEIGHT_PIXELS,      // Aspect ratio
     0.1,            // Near plane
     10000           // Far plane
   );
-  camera.position.set(0, (2 * $scope.gridWidthPixels) / 4, (-1 * $scope.gridWidthPixels) * 2);
-  var sceneCenter = scene.position;
-  console.log('scene center=' + $scope.vectorText(sceneCenter));
-  camera.lookAt(sceneCenter);
+
+  $scope.pointCamera();
 
   var light = new THREE.AmbientLight(0x999999);
-  scene.add(light);
+  $scope.scene.add(light);
 
   var plight = new THREE.PointLight(0x666666);
   plight.position.set(100, 500, 100);
-  scene.add(plight);
+  $scope.scene.add(plight);
 
   //$scope.renderer.setClearColor(0x000000, 1);
   $scope.generatePlaneObject();
